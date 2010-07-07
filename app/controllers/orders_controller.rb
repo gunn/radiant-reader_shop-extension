@@ -31,7 +31,7 @@ class OrdersController < ApplicationController
     setup_response = gateway.setup_purchase( @order.price/100.0,
       :ip                => request.remote_ip,
       :return_url        => order_url(@order),
-      :cancel_return_url => order_url(@order), 
+      :cancel_return_url => order_url(@order),
       :currency          => "NZD"
     )
     
@@ -49,10 +49,16 @@ class OrdersController < ApplicationController
     if @order.status != "complete"
       
       purchase = gateway.purchase(@order.order_value,
-        :ip       => request.remote_ip, 
-        :payer_id => params[:PayerID],
-        :token    => params[:token],
-        :currency => "NZD"
+        :payer_id    => params[:PayerID],
+        :token       => params[:token], 
+        :currency    => "NZD",
+        
+        :ip          => request.remote_ip,
+        :order_id    => @order.id,
+        :description => "#{@order.title}: #{order.description}",
+        :title       => current_site.paypal_title,
+                
+        :email       => @order.reader.email
       )
     
       @order.status = purchase.success? ? "complete" : "fail on purchase!"
