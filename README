@@ -1,3 +1,6 @@
 = Reader Shop
 
 Description goes here
+
+in environment.rb:
+config.gem 'inherited_resources', :version => "1.0.6"

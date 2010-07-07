@@ -1,0 +1,11 @@
+%h1 Success!
+%p
+  We have a logged in reader
+  %b= "#{@order.reader.name}."
+  Who is conducting the following order:
+%br
+
+%h3= "Order number #{@order.id}"
+%p= @order.title
+%p= @order.description
+%p= number_to_currency @order.price/100.0

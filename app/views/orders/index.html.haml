@@ -1,0 +1,11 @@
+%p= current_reader.name if current_reader
+%p= link_to "new_order", orders_path, :method => :post
+%p= link_to "sign out", reader_logout_path
+%p= session[:current_order_id]
+%p= session[:return_to]
+
+- form_for :order, :url => orders_path, :method => :post do |f|
+  = f.hidden_field :title, :value => "Tree"
+  = f.hidden_field :description, :value => "Sponsorship of a single tree."
+  = f.hidden_field :price, :value => 10_000
+  = f.submit "submit!!!!"
