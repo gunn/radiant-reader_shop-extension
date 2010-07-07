@@ -24,6 +24,47 @@ class OrdersController < ApplicationController
     end
   end
   
+  def checkout
+    @order = resource
+    
+    setup_response = gateway.setup_purchase( @order.order_value,
+      :ip                => request.remote_ip,
+      :return_url        => order_path(@order),
+      :cancel_return_url => order_path(@order),
+      :currency          => "NZD"
+    )
+    
+    @order.token = setup_response.token
+    @order.status = "paypal_setup"
+    @order.save
+    
+    redirect_to gateway.redirect_url_for(setup_response.token)
+  end
+  
+  def complete
+    @order = resource
+    
+    if @order.status != "complete"
+      
+      purchase = gateway.purchase(@order.order_value,
+        :ip       => request.remote_ip, 
+        :payer_id => params[:PayerID],
+        :token    => params[:token],
+        :currency => "NZD"
+      )
+    
+      @order.status = purchase.success? ? "complete" : "fail on purchase!"
+      @order.save
+    
+      if !purchase.success?
+        @message = purchase.message
+        render :action => 'error'
+        return
+      end
+      
+    end
+  end
+  
   protected
     
     def check_reader
@@ -44,10 +85,7 @@ class OrdersController < ApplicationController
     def assign_reader      
       @order = resource
       
-      if !@order.reader
-        @order.reader = current_reader
-        @order.save
-      end
+      @order.set_reader( current_reader ) if !@order.reader
     end
   
 end
