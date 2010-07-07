@@ -1,4 +1,5 @@
 class OrdersController < ApplicationController
+  include ActiveMerchant::Billing
   no_login_required
   
   inherit_resources
@@ -27,10 +28,10 @@ class OrdersController < ApplicationController
   def checkout
     @order = resource
     
-    setup_response = gateway.setup_purchase( @order.order_value,
+    setup_response = gateway.setup_purchase( @order.price/100.0,
       :ip                => request.remote_ip,
-      :return_url        => order_path(@order),
-      :cancel_return_url => order_path(@order),
+      :return_url        => order_url(@order),
+      :cancel_return_url => order_url(@order), 
       :currency          => "NZD"
     )
     
@@ -42,7 +43,8 @@ class OrdersController < ApplicationController
   end
   
   def complete
-    @order = resource
+    # stop people doing stupid things by guessing the URL
+    @order = Order.find_by_token(params[:token])
     
     if @order.status != "complete"
       
@@ -66,6 +68,13 @@ class OrdersController < ApplicationController
   end
   
   protected
+  
+    def gateway
+      @gateway ||= PaypalExpressGateway.new (
+        :login     => current_site.paypal_username,
+        :password  => current_site.paypal_password,
+        :signature => current_site.paypal_signature )
+    end
     
     def check_reader
       # A user i.e. a site editor can do anything.

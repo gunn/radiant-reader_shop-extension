@@ -9,13 +9,15 @@ class ReaderShopExtension < Radiant::Extension
   
   extension_config do |config|
     config.gem 'inherited_resources', :version => "1.0.6"
+    config.gem 'activemerchant', :lib => "active_merchant"
   end
   
   def activate
+    ActiveMerchant::Billing::Base.mode = :test
+    
     if defined?(admin.sites) && !admin.sites.edit[:form].include?("admin/sites/paypal_credentials")
       admin.sites.edit.add :form, "admin/sites/paypal_credentials", :after => "edit_homepage"
     end
-    
   end
   
   def deactivate
