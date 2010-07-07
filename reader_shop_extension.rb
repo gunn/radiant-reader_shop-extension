@@ -4,7 +4,7 @@ class ReaderShopExtension < Radiant::Extension
   url "http://gunn.co.nz/"
   
   define_routes do |map|
-    map.resources :orders, :member => { :checkout => :get, :complete => :get } 
+    map.resources :orders, :member => { :checkout => :put, :complete => :get } 
   end
   
   extension_config do |config|

@@ -27,19 +27,11 @@ class OrdersController < ApplicationController
   
   def checkout
     @order = resource
-    
-    setup_response = gateway.setup_purchase( @order.price/100.0,
-      :ip                => request.remote_ip,
-      :return_url        => order_url(@order),
-      :cancel_return_url => order_url(@order),
-      :currency          => "NZD"
-    )
-    
-    @order.token = setup_response.token
-    @order.status = "paypal_setup"
-    @order.save
-    
-    redirect_to gateway.redirect_url_for(setup_response.token)
+    if @order.update_attributes(params[:order])
+      setup_purchase!
+    else
+      render 'orders/edit'
+    end
   end
   
   def complete
@@ -47,7 +39,40 @@ class OrdersController < ApplicationController
     @order = Order.find_by_token(params[:token])
     
     if @order.status != "complete"
-      
+      purchase = charge_user!
+      # if !purchase.success?
+      #   @message = purchase.message
+      #   render :action => 'error'
+      #   return
+      # end
+    end
+  end
+  
+  protected
+  
+    def gateway
+      @gateway ||= PaypalExpressGateway.new (
+        :login     => current_site.paypal_username,
+        :password  => current_site.paypal_password,
+        :signature => current_site.paypal_signature )
+    end
+    
+    def setup_purchase!
+      setup_response = gateway.setup_purchase( @order.price/100.0,
+        :ip                => request.remote_ip,
+        :return_url        => order_url(@order),
+        :cancel_return_url => order_url(@order),
+        :currency          => "NZD"
+      )
+
+      @order.token = setup_response.token
+      @order.status = "paypal_setup"
+      @order.save
+
+      redirect_to gateway.redirect_url_for(setup_response.token)
+    end
+    
+    def charge_user!
       purchase = gateway.purchase(@order.order_value,
         :payer_id    => params[:PayerID],
         :token       => params[:token], 
@@ -61,25 +86,10 @@ class OrdersController < ApplicationController
         :email       => @order.reader.email
       )
     
-      @order.status = purchase.success? ? "complete" : "fail on purchase!"
+      @order.status = purchase.success? ? "complete" : "fail_on_purchase"
       @order.save
-    
-      if !purchase.success?
-        @message = purchase.message
-        render :action => 'error'
-        return
-      end
       
-    end
-  end
-  
-  protected
-  
-    def gateway
-      @gateway ||= PaypalExpressGateway.new (
-        :login     => current_site.paypal_username,
-        :password  => current_site.paypal_password,
-        :signature => current_site.paypal_signature )
+      purchase
     end
     
     def check_reader
@@ -99,8 +109,9 @@ class OrdersController < ApplicationController
     
     def assign_reader      
       @order = resource
-      
-      @order.set_reader( current_reader ) if !@order.reader
+      @order.reader = current_reader if !@order.reader
+      @order.get_billing_details_from_reader! if !@order.billing_address
+      @order.save(false)
     end
   
 end
