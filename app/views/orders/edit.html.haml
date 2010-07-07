@@ -9,7 +9,7 @@
     %h4 Please confirm the following order details:
     - form_for @order, :url => checkout_order_path do |f|
       - f.fields_for :billing_address, @order.billing_address do |b|
-        - [[:name, "Your name"], [:address1, "Address line 1"], [:address2, "Address line 2"], [:city, "City"], [:state, "State / Province"], [:country, "Country"], [:zip, "Zip / Postcode"]].each do |field, description|
+        - [[:name, "Your name"], [:address1, "Address line 1"], [:address2, "Address line 2"], [:city, "City"], [:state, "State / Province"], [:country, "Country"], [:zip, "Zip / Postcode"], [:phone, "Phone Number"]].each do |field, description|
           %p
             = b.label field, description, :style => "display:block"
             = b.text_field field

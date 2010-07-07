@@ -58,13 +58,20 @@ class OrdersController < ApplicationController
     end
     
     def setup_purchase!
-      setup_response = gateway.setup_purchase( @order.price/100.0,
-        :ip                => request.remote_ip,
+      # debugger
+      setup_response = gateway.setup_purchase( @order.price,
         :return_url        => order_url(@order),
         :cancel_return_url => order_url(@order),
-        :currency          => "NZD"
-      )
-
+        :currency          => "NZD",
+        
+        :ip                => request.remote_ip,
+        :order_id          => @order.id,
+        :description       => "#{@order.title}: #{@order.description}",
+        :title             => current_site.paypal_title,
+        :address           => @order.billing_address.address_hash, 
+                
+        :email             => @order.reader.email )
+        
       @order.token = setup_response.token
       @order.status = "paypal_setup"
       @order.save
@@ -74,17 +81,12 @@ class OrdersController < ApplicationController
     
     def charge_user!
       purchase = gateway.purchase(@order.order_value,
-        :payer_id    => params[:PayerID],
-        :token       => params[:token], 
-        :currency    => "NZD",
+        :payer_id => params[:PayerID],
+        :token    => params[:token], 
+        :currency => "NZD",
         
-        :ip          => request.remote_ip,
-        :order_id    => @order.id,
-        :description => "#{@order.title}: #{order.description}",
-        :title       => current_site.paypal_title,
-                
-        :email       => @order.reader.email
-      )
+        :ip       => request.remote_ip )
+
     
       @order.status = purchase.success? ? "complete" : "fail_on_purchase"
       @order.save
