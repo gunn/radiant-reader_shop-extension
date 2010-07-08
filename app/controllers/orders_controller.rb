@@ -1,6 +1,8 @@
 class OrdersController < ApplicationController
   include ActiveMerchant::Billing
+  
   no_login_required
+  skip_before_filter :verify_authenticity_token
   
   inherit_resources
   respond_to :html
@@ -10,7 +12,7 @@ class OrdersController < ApplicationController
   before_filter :check_reader, :except => [:index, :create]
   before_filter :assign_reader, :only => [:edit, :update]
   
-  # radiant_layout { |controller| controller.layout_for :reader }
+  radiant_layout { |controller| controller.layout_for :reader }
   
   def create
     create! do |format|
@@ -40,12 +42,9 @@ class OrdersController < ApplicationController
     
     if @order.status != "complete"
       purchase = charge_user!
-      # if !purchase.success?
-      #   @message = purchase.message
-      #   render :action => 'error'
-      #   return
-      # end
+      # do something if !purchase.success? ???
     end
+    redirect_to order_path(@order)
   end
   
   protected
@@ -58,10 +57,9 @@ class OrdersController < ApplicationController
     end
     
     def setup_purchase!
-      # debugger
       setup_response = gateway.setup_purchase( @order.price,
-        :return_url        => order_url(@order),
-        :cancel_return_url => order_url(@order),
+        :return_url        => complete_order_url(@order), # to do the actual charge, then redirect to show for summary.
+        :cancel_return_url => order_url(@order),          # to show the incomplete status of the order
         :currency          => "NZD",
         
         :ip                => request.remote_ip,
@@ -80,7 +78,7 @@ class OrdersController < ApplicationController
     end
     
     def charge_user!
-      purchase = gateway.purchase(@order.order_value,
+      purchase = gateway.purchase(@order.price,
         :payer_id => params[:PayerID],
         :token    => params[:token], 
         :currency => "NZD",

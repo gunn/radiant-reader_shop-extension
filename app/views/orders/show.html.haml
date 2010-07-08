@@ -1,0 +1,9 @@
+.order_summary
+  %h1.title= @order.title
+  %p.description= @order.description
+  %h3.price= number_to_currency( (@order.price||0) / 100.0 )
+  %br
+  %hr{:width => "100%"}
+  %h3
+    Payment status:
+    %b= @order.status

@@ -12,6 +12,9 @@
         - [[:name, "Your name"], [:address1, "Address line 1"], [:address2, "Address line 2"], [:city, "City"], [:state, "State / Province"], [:country, "Country"], [:zip, "Zip / Postcode"], [:phone, "Phone Number"]].each do |field, description|
           %p
             = b.label field, description, :style => "display:block"
-            = b.text_field field
+            - if field==:country
+              = country_select("order[billing_address_attributes]", :country, ["AU", "NZ"], :prompt => true, :value => @order.billing_address.country)
+            - else
+              = b.text_field field
       
       = f.submit "Purchase via PayPal"
