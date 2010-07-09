@@ -1,0 +1,33 @@
+== Reader Shop
+
+Works with the reader extension to charge for items via paypal.
+Differs from other payment extensions by being very light. There is no products table - instead orders are created by sending for data to the /orders path.
+
+
+=== Requirements
+
+Works with 0.8.1 and probably 0.9.
+Currently requires my fork of Spanner's reader extension:
+  http://github.com/gunn/radiant-reader-extension
+
+Currently requires the multi-site extension installed, although this will probably change.
+  http://github.com/spanner/radiant-multi-site-extension/
+
+=== Installation
+
+Get the code however you like. Submodules are a good idea:
+  git submodule add http://github.com/gunn/radiant-reader_shop-extension vendor/extensions/reader_shop
+
+Run the migrations:
+  rake radiant:extensions:reader_shop:migrate
+
+In your environment.rb:
+  config.gem 'inherited_resources', :version => "1.0.6"
+
+=== Usage
+  Go to the settings page for whichever site requires ordering functionality and enter your paypal credentials.
+  Create a user facing form which when submitted sends the parameters title, description, and price (in cents) to the /orders path.
+  
+  A user following this, if not signed in as a reader, will be asked to create a reader account or sign in. They will then be asked to confirm their billing details before being redirected to paypal.
+  
+Any questions: please message me.
