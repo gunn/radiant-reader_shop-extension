@@ -25,9 +25,10 @@ In your environment.rb:
   config.gem 'inherited_resources', :version => "1.0.6"
 
 === Usage
-  Go to the settings page for whichever site requires ordering functionality and enter your paypal credentials.
-  Create a user facing form which when submitted sends the parameters title, description, and price (in cents) to the /orders path.
-  
-  A user following this, if not signed in as a reader, will be asked to create a reader account or sign in. They will then be asked to confirm their billing details before being redirected to paypal.
+Go to the settings page for whichever site requires ordering functionality and enter your paypal credentials.
+Create a user facing form which when submitted sends the parameters title, description, and price (in cents) to the /orders path.
+
+A user following this, if not signed in as a reader, will be asked to create a reader account or sign in. They will then be asked to confirm their billing details before being redirected to paypal.
+
   
 Any questions: please message me.
