@@ -11,6 +11,7 @@ class OrdersController < ApplicationController
   
   before_filter :check_reader, :except => [:index, :create]
   before_filter :assign_reader, :only => [:edit, :update]
+  before_filter :set_paypal_mode, :only => [:checkout, :complete]
   
   radiant_layout { |controller| controller.layout_for :reader }
   
@@ -54,6 +55,11 @@ class OrdersController < ApplicationController
         :login     => current_site.paypal_username,
         :password  => current_site.paypal_password,
         :signature => current_site.paypal_signature )
+    end
+    
+    
+    def set_paypal_mode
+      ActiveMerchant::Billing::Base.mode = current_site.paypal_test_mode? ? :test : :production
     end
     
     def setup_purchase!

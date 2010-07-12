@@ -13,7 +13,6 @@ class ReaderShopExtension < Radiant::Extension
   end
   
   def activate
-    ActiveMerchant::Billing::Base.mode = :test
     
     if defined?(admin.sites) && !admin.sites.edit[:form].include?("admin/sites/paypal_credentials")
       admin.sites.edit.add :form, "admin/sites/paypal_credentials", :after => "edit_homepage"
