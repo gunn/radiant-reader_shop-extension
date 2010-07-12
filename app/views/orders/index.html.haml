@@ -1,5 +1,5 @@
 %p= current_reader.name if current_reader
-%p= link_to "new_order", orders_path, :method => :post
+%p= link_to "new_order", orders_path, :method => :post, :params => { :price => 10000 }
 %p= link_to "sign out", reader_logout_path
 %p= session[:current_order_id]
 %p= session[:return_to]
