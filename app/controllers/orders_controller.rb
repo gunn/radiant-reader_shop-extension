@@ -75,7 +75,8 @@ class OrdersController < ApplicationController
         :address           => @order.billing_address.address_hash, 
                 
         :email             => @order.reader.email )
-        
+      
+      @order.setup_response = setup_response
       @order.token = setup_response.token
       @order.status = "paypal_setup"
       @order.save
@@ -91,7 +92,7 @@ class OrdersController < ApplicationController
         
         :ip       => request.remote_ip )
 
-    
+      @order.purchase_response = purchase
       @order.status = purchase.success? ? "complete" : "fail_on_purchase"
       @order.save
       

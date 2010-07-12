@@ -7,6 +7,9 @@ class Order < ActiveRecord::Base
   
   accepts_nested_attributes_for :billing_address
   
+  serialize :setup_response
+  serialize :purchase_response
+  
   def get_billing_details_from_reader!
     self.billing_address = BillingAddress.create({
       :name     => reader.name,
