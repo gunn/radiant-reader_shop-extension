@@ -28,7 +28,15 @@ In your environment.rb:
 Go to the settings page for whichever site requires ordering functionality and enter your paypal credentials.
 Create a user facing form which when submitted sends the parameters title, description, and price (in cents) to the /orders path.
 
-A user following this, if not signed in as a reader, will be asked to create a reader account or sign in. They will then be asked to confirm their billing details before being redirected to paypal.
+There is a tag to help create the form, the tag can take argument normally, or by having the its inner content interpereted as YAML. For example:
+  <r:order_form description="great fun!" price="3900">
+  title: <r:title/>
+  submit: Purchase
+  </r:order_form>
+
+Arguments from YAMl take override the regular ones.
+
+A user submitting the form, if not signed in as a reader, will be asked to create a reader account or sign in. They will then be asked to confirm their billing details before being redirected to paypal.
 
   
 Any questions: please message me.
