@@ -9,6 +9,12 @@ class Order < ActiveRecord::Base
   
   serialize :setup_response
   serialize :purchase_response
+  serialize :data
+  
+  named_scope :completed, :conditions => { :status => 'complete' }
+  named_scope :by_code, lambda { |code|
+    { :conditions => { :code => code } }
+  }
   
   def get_billing_details_from_reader!
     self.billing_address = BillingAddress.create({

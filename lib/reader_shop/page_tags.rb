@@ -15,6 +15,7 @@ module ReaderShop
         <input id="order_title" name="order[title]" type="hidden" value="#{opts['title']}" />
         <input id="order_description" name="order[description]" type="hidden" value="#{opts['description']}" />
         <input id="order_price" name="order[price]" type="hidden" value="#{opts['price']}" />
+        <input id="order_price" name="order[code]" type="hidden" value="#{opts['code']}" />
         <input id="order_submit" name="commit" type="submit" value="#{opts['submit']}" />
       </form>}
     end

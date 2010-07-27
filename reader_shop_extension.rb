@@ -13,16 +13,12 @@ class ReaderShopExtension < Radiant::Extension
   end
   
   def activate
-    
     if defined?(admin.sites) && !admin.sites.edit[:form].include?("admin/sites/paypal_credentials")
       admin.sites.edit.add :form, "admin/sites/paypal_credentials", :after => "edit_homepage"
     end
     
     Page.send :include, ReaderShop::PageTags
-  end
-  
-  def deactivate
-    # 
+    Reader.send :include, ReaderShop::ReaderExtensions
   end
   
 end
