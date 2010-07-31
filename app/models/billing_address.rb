@@ -5,7 +5,7 @@ class BillingAddress < ActiveRecord::Base
     validates_presence_of field, :on => :update, :message => "can't be blank"
   end
   
-  validates_inclusion_of :country, :in => Geography::COUNTRY_CODES, :on => :update, :message => "%s is not a valid country."
+  validates_inclusion_of :country, :in => Geography::country_codes, :on => :update, :message => "%s is not a valid country."
   
   def address_hash
     # the keys in the attributes hash are strings, but the activemerchant uses symbols
