@@ -42,8 +42,9 @@ class OrdersController < ApplicationController
     @order = Order.find_by_token(params[:token])
     
     if @order.status != "complete"
-      purchase = charge_user!
-      # do something if !purchase.success? ???
+      @purchase = charge_user!
+      # Another extension can add an after filter
+      # that accesses @purchase / @purchase.success?
     end
     redirect_to order_path(@order)
   end
